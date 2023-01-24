@@ -6,20 +6,30 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "concurrently \"nodemon app.js\" \"cd client && npm start\"",
+    "start": "nodemon app.js",
+    "dev": "nodemon app.js",
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^5.2.0",
+    "cli-spinners": "^2.7.0",
     "concurrently": "^6.2.1",
     "dotenv": "^16.0.3",
     "express": "^4.17.1",
-    "puppeteer": "^19.5.2"
+    "log-update": "^5.0.1",
+    "nodemailer": "^6.9.0",
+    "open": "^8.4.0",
+    "puppeteer": "^19.5.2",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-portal": "^3.1.0",
+    "puppeteer-extra-plugin-stealth": "^2.11.1"
   },
   "devDependencies": {
+    "eslint": "^8.32.0",
+    "eslint-plugin-react": "^7.32.1",
     "nodemon": "^2.0.12"
   }
 }

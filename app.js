@@ -2,42 +2,31 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
-import path from "path";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import PortalPlugin from "puppeteer-extra-plugin-portal";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
+import testRoutes from "./routes/test.js";
+import linkedinRoutes from "./routes/linkedin.js";
+import linkedinNoAuthRoute from "./routes/linkedinNoAuth.js";
+import { filter } from "./vars/filter.js";
 const app = express();
 
-app.listen(process.env.PORT || "4000");
+app.listen(process.env.PORT || "3000");
 
-app.get("/hello", (req, res) => {
-  (async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+app.use(testRoutes);
+app.use(linkedinRoutes);
+app.use(linkedinNoAuthRoute);
 
-    await page.goto("https://www.linkedin.com/home");
-
-    // Type into search box.
-    await page.type("#session_key", process.env.LINKEDIN_UN);
-    await page.type("#session_password", process.env.LINKEDIN_PW);
-
-    const [response] = await Promise.all([
-      page.waitForNavigation(),
-      page.click(".sign-in-form__submit-button"),
-    ]);
-
-    setTimeout(async () => {
-      await page.screenshot({ path: "delete.png" });
-      await browser.close();
-    }, 5000);
-  })();
-
-  res.json({ success: true });
-});
-
-if (process.env.NODE_ENV === "production") {
-  // Allows Express to serve production assets.
-  app.use(express.static("client/build"));
-  app.get("*", (req, res, next) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-}
+puppeteer.use(StealthPlugin());
+puppeteer.use(
+  PortalPlugin({
+    // This is a typical configuration when hosting behind a secured reverse proxy
+    webPortalConfig: {
+      listenOpts: {
+        port: 3001,
+      },
+      baseUrl: "http://localhost:3001",
+    },
+  })
+);

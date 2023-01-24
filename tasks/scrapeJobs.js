@@ -3,6 +3,7 @@ import { baseLinkedInUrl } from "../vars/baseLinkedInUrl.js";
 import chalk from "chalk";
 import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 import { filter } from "../vars/filter.js";
+import { config } from "../config.js";
 
 export async function scrapeJobs(page) {
   // Selector for jobs list
@@ -21,10 +22,10 @@ export async function scrapeJobs(page) {
   let clearMessage = setLoadingMessage("Searching for jobs", chalk.blue);
 
   for (let i = 1; i <= jobsCount; i++) {
-    const jobConainer = await page.waitForSelector(
+    const jobContainer = await page.waitForSelector(
       `ul:nth-child(3) li:nth-child(${i})`
     );
-    await jobConainer.evaluate((el) => el.scrollIntoView());
+    await jobContainer.evaluate((el) => el.scrollIntoView());
 
     const jobListing = await page.waitForSelector(
       `ul:nth-child(3) li:nth-child(${i}) a`
@@ -33,8 +34,11 @@ export async function scrapeJobs(page) {
       return { title: el.innerText, href: el.href };
     });
 
+    console.log(val);
+
     filter.map((cond) => {
-      if (val.title.toLocaleLowerCase().includes(cond)) {
+      if (val.title.toLowerCase().includes(cond)) {
+        console.log("adding job..", val);
         jobs.push(val);
       } else {
         // console.log();
@@ -43,10 +47,9 @@ export async function scrapeJobs(page) {
 
     if (jobsCount === i) {
       clearMessage(`${jobs.length} job(s) found!. Going to next page...`);
-
       i = 1;
       start = start + 25;
-      await page.goto(`${baseLinkedInUrl}&start=${start}`);
+      await page.goto(`${config.mainURL}&start=${start}`);
       clearMessage = setLoadingMessage("Searching for jobs", chalk.blue);
     }
   }

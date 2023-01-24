@@ -13,6 +13,8 @@ import { scrapeJobs } from "../tasks/scrapeJobs.js";
 import chalk from "chalk";
 import { filter } from "../vars/filter.js";
 
+import { config } from "../config.js";
+
 const router = Router();
 router.get("/linkedin", async (req, res) => {
   await (async () => {
@@ -28,6 +30,10 @@ router.get("/linkedin", async (req, res) => {
     });
 
     await loginToLinkedIn(page);
+
+    console.log(
+      `Beginning search for ${chalk.cyan(`${config.searchKeywords}`)} jobs.`
+    );
 
     console.log(
       chalk.yellow(

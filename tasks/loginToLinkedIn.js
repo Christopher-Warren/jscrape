@@ -5,6 +5,8 @@ import logUpdate from "log-update";
 import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 import { filter } from "../vars/filter.js";
 
+import { config } from "../config.js";
+
 export async function loginToLinkedIn(page) {
   await page.goto("https://www.linkedin.com/home");
 
@@ -39,9 +41,12 @@ export async function loginToLinkedIn(page) {
     await page.closePortal();
   }
 
-  await page.goto(baseLinkedInUrl);
+  try {
+    await page.goto(config.mainURL);
 
-  await page.waitForRequest(
-    "https://www.linkedin.com/voyager/api/search/history?action=update"
-  );
+    await page.waitForSelector("#job-details");
+  } catch (error) {
+    console.log(error);
+    page.screenshot({ path: "error.png" });
+  }
 }

@@ -9,7 +9,7 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import testRoutes from "./routes/test.js";
 import linkedinRoutes from "./routes/linkedin.js";
 import linkedinNoAuthRoute from "./routes/linkedinNoAuth.js";
-import { filter } from "./vars/filter.js";
+
 const app = express();
 
 app.listen(process.env.PORT || "3000");

@@ -3,7 +3,11 @@ import logUpdate from "log-update";
 import cliSpinners from "cli-spinners";
 import chalk from "chalk";
 
-export function setLoadingMessage(message, chalkColor = chalk.white) {
+export function setLoadingMessage(
+  message,
+  chalkColor = chalk.white,
+  persist = true
+) {
   const frames = cliSpinners.dots.frames;
   let index = 0;
 
@@ -17,7 +21,7 @@ export function setLoadingMessage(message, chalkColor = chalk.white) {
 
   function clearLoadingMessage(message) {
     logUpdate(`${chalkColor(`${message}`)}`);
-    logUpdate.done();
+    persist && logUpdate.done();
     clearInterval(intervalId);
   }
 

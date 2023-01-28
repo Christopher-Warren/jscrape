@@ -15,6 +15,8 @@ const app = express();
 
 app.listen(process.env.PORT || "3000");
 
+app.listen("3001");
+
 app.use(linkedinRoutes);
 app.use(linkedinNoAuthRoute);
 
@@ -24,11 +26,11 @@ puppeteer.use(
     // This is a typical configuration when hosting behind a secured reverse proxy
     webPortalConfig: {
       listenOpts: {
-        port: 3001,
+        port: 3000,
       },
       baseUrl:
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3001"
+          ? "http://localhost"
           : "https://jscrape.onrender.com",
     },
   })

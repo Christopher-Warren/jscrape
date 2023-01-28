@@ -43,7 +43,7 @@ router.get("/linkedin", async (req, res) => {
       )
     );
 
-    await scrapeJobs(page);
+    // await scrapeJobs(page);
 
     await page.screenshot({ path: "delete.png" });
     await browser.close();

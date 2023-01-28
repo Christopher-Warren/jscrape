@@ -26,7 +26,10 @@ puppeteer.use(
       listenOpts: {
         port: 3001,
       },
-      baseUrl: "http://localhost:3001",
+      baseUrl:
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:3001"
+          : "https://jscrape.onrender.com",
     },
   })
 );

@@ -19,6 +19,7 @@ router.get("/linkedin", async (req, res) => {
   await (async () => {
     const browser = await puppeteer.launch({
       executablePath: executablePath(),
+      args: ["--no-sandbox"],
     });
     const page = await browser.newPage();
 

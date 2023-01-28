@@ -6,7 +6,7 @@ import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 import { config } from "../config.js";
 
 export async function loginToLinkedIn(page) {
-  console.log(chalk.magenta("✔ Logging into LinkedIn..."));
+  console.log(chalk.magenta("Logging into LinkedIn..."));
   await page.goto("https://www.linkedin.com/home");
 
   // Type into search box.

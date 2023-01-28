@@ -14,10 +14,12 @@ import cliSpinners from "cli-spinners";
 import http from "http";
 
 import httpProxy from "http-proxy";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import { executablePath } from "puppeteer";
 
 const app = express();
 
-app.listen(process.env.PORT || "3000");
+// app.listen(process.env.PORT || "3000");
 
 app.use(linkedinRoutes);
 app.use(linkedinNoAuthRoute);
@@ -30,9 +32,21 @@ puppeteer.use(
     // This is a typical configuration when hosting behind a secured reverse proxy
     webPortalConfig: {
       listenOpts: {
-        port: 3001,
+        port: process.env.PORT || 3000,
       },
-      baseUrl: "http://localhost:3001",
+      baseUrl: "https://jscrape.onrender.com",
     },
   })
 );
+
+const browser = await puppeteer.launch({
+  executablePath: executablePath(),
+  args: ["--no-sandbox"],
+});
+const page = await browser.newPage();
+
+await page.goto("https://www.google.com");
+
+const portalUrl = await page.openPortal();
+
+console.log(portalUrl);

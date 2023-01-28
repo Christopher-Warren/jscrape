@@ -22,7 +22,7 @@
     "log-update": "^5.0.1",
     "nodemailer": "^6.9.0",
     "open": "^8.4.0",
-    "puppeteer": "^19.5.2",
+    "puppeteer": "^19.6.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-portal": "^3.1.0",
     "puppeteer-extra-plugin-stealth": "^2.11.1"

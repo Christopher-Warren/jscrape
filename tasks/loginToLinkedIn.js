@@ -1,9 +1,7 @@
 import open from "open";
-import { baseLinkedInUrl } from "../vars/baseLinkedInUrl.js";
 import chalk from "chalk";
 import logUpdate from "log-update";
 import { setLoadingMessage } from "../utils/setLoadingMessage.js";
-import { filter } from "../vars/filter.js";
 
 import { config } from "../config.js";
 
@@ -28,6 +26,7 @@ export async function loginToLinkedIn(page) {
   } catch (error) {
     const portalUrl = await page.openPortal();
 
+    // 1
     const clearMessage = setLoadingMessage(
       "Waiting for user to verify",
       chalk.magenta
@@ -36,17 +35,10 @@ export async function loginToLinkedIn(page) {
     await page.waitForSelector('a[href="/in/christopher-warren-188b2180/"]', {
       timeout: 86400 * 1000, // 24 hours
     });
+
+    // 2
     clearMessage("✔ Verification successful.");
 
     await page.closePortal();
-  }
-
-  try {
-    await page.goto(config.mainURL);
-
-    await page.waitForSelector("#job-details");
-  } catch (error) {
-    console.log(error);
-    page.screenshot({ path: "error.png" });
   }
 }

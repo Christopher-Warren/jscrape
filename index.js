@@ -6,15 +6,15 @@ import puppeteer from "puppeteer-extra";
 import PortalPlugin from "puppeteer-extra-plugin-portal";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
-import testRoutes from "./routes/test.js";
 import linkedinRoutes from "./routes/linkedin.js";
 import linkedinNoAuthRoute from "./routes/linkedinNoAuth.js";
+import logUpdate from "log-update";
+import cliSpinners from "cli-spinners";
 
 const app = express();
 
 app.listen(process.env.PORT || "3000");
 
-app.use(testRoutes);
 app.use(linkedinRoutes);
 app.use(linkedinNoAuthRoute);
 

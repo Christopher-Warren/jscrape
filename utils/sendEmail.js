@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export default async function sendEmail(jobs) {
+export default async function sendEmail(jobs, excludedJobs) {
   const transporter = nodemailer.createTransport({
     host: "smtp.chriswarren.tech.",
     port: 587,
@@ -20,7 +20,7 @@ export default async function sendEmail(jobs) {
     to: "chriswarrentech@gmail.com",
     subject: `New jobs! ${new Date().toLocaleString()}`,
     text: `Plain text`,
-    html: `<h1>Below is a list of jobs</h1>
+    html: `<h1>Jscape - ${excludedJobs} jobs excluded</h1>
     <ul style="list-style: none; font-size: larger">
       ${jobs.map(
         (job) => `<li>

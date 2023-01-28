@@ -11,7 +11,6 @@ import { loginToLinkedIn } from "../tasks/loginToLinkedIn.js";
 import { scrapeJobs } from "../tasks/scrapeJobs.js";
 
 import chalk from "chalk";
-import { filter } from "../vars/filter.js";
 
 import { config } from "../config.js";
 
@@ -37,8 +36,8 @@ router.get("/linkedin", async (req, res) => {
 
     console.log(
       chalk.yellow(
-        `Ignoring all jobs that contain ${chalk.white(
-          filter.map((i) => i + " ")
+        `Excluding all jobs that contain ${chalk.white(
+          config.customFilters.map((i) => " " + i)
         )}`
       )
     );

@@ -29,9 +29,10 @@ export async function loginToLinkedIn(page) {
 
     // 1
     const clearMessage = setLoadingMessage(
-      "Waiting for user to verify",
+      `Waiting for user to verify - ${portalUrl}`,
       chalk.magenta
     );
+
     await open(portalUrl);
     await page.waitForSelector('a[href="/in/christopher-warren-188b2180/"]', {
       timeout: 86400 * 1000, // 24 hours

@@ -2,7 +2,7 @@ export const config = {
   baseSearchURL: "https://www.linkedin.com/jobs/search/",
   searchFilters: "?f_TPR=r86400&f_WT=2&keywords=",
   searchKeywords: "junior frontend developer",
-  customFilters: [
+  customTitleFilters: [
     "sr.",
     "sr",
     "senior",

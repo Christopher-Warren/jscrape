@@ -1,13 +1,18 @@
 import nodemailer from "nodemailer";
 
 export default async function sendEmail(jobs, excludedJobs) {
+  const host = process.env.NODEMAILER_HOST;
+  const user = process.env.NODEMAILER_EMAIL;
+  const pass = process.env.NODEMAILER_PASSWORD;
+  const recipient = process.env.NODEMAILER_RECIPIENT;
+
   const transporter = nodemailer.createTransport({
-    host: "smtp.chriswarren.tech.",
+    host: host,
     port: 587,
     secure: false, // upgrade later with STARTTLS
     auth: {
-      user: process.env.NODEMAILER_EMAIL,
-      pass: process.env.NODEMAILER_PASSWORD,
+      user: user,
+      pass: pass,
     },
     tls: {
       secureProtocol: "TLSv1_method",
@@ -16,8 +21,8 @@ export default async function sendEmail(jobs, excludedJobs) {
   });
 
   const selfMailOptions = {
-    from: "chris@chriswarren.tech",
-    to: "chriswarrentech@gmail.com",
+    from: user,
+    to: recipient,
     subject: `New jobs! ${new Date().toLocaleString()}`,
     text: `Plain text`,
     html: `<h1>Jscape - ${excludedJobs} jobs excluded</h1>

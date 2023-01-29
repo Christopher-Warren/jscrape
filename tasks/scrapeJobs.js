@@ -14,7 +14,7 @@ export async function scrapeJobs(page) {
   console.log(
     chalk.yellow(
       `Excluding all jobs that contain ${chalk.white(
-        config.customFilters.map((i) => " " + i)
+        config.customTitleFilters.map((i) => " " + i)
       )}`
     )
   );
@@ -77,7 +77,7 @@ export async function scrapeJobs(page) {
         return { title: el.innerText, href: el.href };
       });
 
-      const matchesFilter = config.customFilters.some((cond) =>
+      const matchesFilter = config.customTitleFilters.some((cond) =>
         val.title.toLowerCase().includes(cond.toLowerCase())
       );
       const newJob = !jobs.some((job) => job.href === val.href);

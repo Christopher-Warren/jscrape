@@ -16,24 +16,22 @@ export async function loginToLinkedIn(page) {
 
   try {
     await page.waitForSelector('a[href="https://www.linkedin.com/jobs/?"]', {
-      timeout: 2000,
+      timeout: 10000,
     });
 
     console.log(chalk.magenta("✔ Login successful."));
   } catch (error) {
     const portalUrl = await page.openPortal();
 
-    // 1
     const clearMessage = setLoadingMessage(
       `Waiting for user to verify - ${portalUrl}`,
       chalk.magenta
     );
 
-    await page.waitForSelector('a[href="/in/christopher-warren-188b2180/"]', {
+    await page.waitForSelector(".search-global-typeahead__input", {
       timeout: 86400 * 1000, // 24 hours
     });
 
-    // 2
     clearMessage("✔ Verification successful.");
 
     await page.closePortal();

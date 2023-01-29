@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { executablePath } from "puppeteer";
 
 import { loginToLinkedIn } from "./loginToLinkedIn.js";

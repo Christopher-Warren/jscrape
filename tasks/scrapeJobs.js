@@ -49,7 +49,10 @@ export async function scrapeJobs(page) {
           hidden: true,
         });
       } catch (error) {
-        clearMessage(`End of search. ${jobs.length} job(s) found.`, true);
+        clearMessage(
+          `${jobs.length} job(s) found. Done. Waiting ${config.searchInterval} minutes until next search.`,
+          true
+        );
         totalPasses++;
 
         if (sentJobs.length !== jobs.length) {

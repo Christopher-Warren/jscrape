@@ -9,12 +9,11 @@ import { getLinkedInJobs } from "./tasks/getLinkedInJobs.js";
 
 const app = express();
 
-app.listen(process.env.PORT || "3000");
+app.listen(process.env.PORT || 3000);
 
 puppeteer.use(StealthPlugin());
 puppeteer.use(
   PortalPlugin({
-    // This is a typical configuration when hosting behind a secured reverse proxy
     webPortalConfig: {
       listenOpts: {
         port: process.env.PORT || 3000,

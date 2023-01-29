@@ -48,8 +48,6 @@ router.get("/linkedin", async (req, res) => {
     await page.screenshot({ path: "delete.png" });
     await browser.close();
   })();
-
-  res.sendFile(path.join(__dirname, "..", "delete.png"));
 });
 
 export default router;

@@ -6,13 +6,18 @@ import { config } from "../config.js";
 import { delay } from "../utils/delay.js";
 
 export async function scrapeJobs(page) {
-  // Selector for jobs list
-  // ul:nth-child(3)
+  let totalPasses = 0;
 
-  // Selector for individual job
-  // "ul:nth-child(3) li:nth-child(4) a"
-
-  // rerun with daemon
+  console.log(
+    `Beginning search for ${chalk.cyan(`${config.searchKeywords}`)} jobs.`
+  );
+  console.log(
+    chalk.yellow(
+      `Excluding all jobs that contain ${chalk.white(
+        config.customFilters.map((i) => " " + i)
+      )}`
+    )
+  );
 
   try {
     await page.goto(config.mainURL);
@@ -30,8 +35,9 @@ export async function scrapeJobs(page) {
   let sentJobs = [];
   const excludedJobs = [];
 
-  while (true) {
-    await delay(10000);
+  // Run infinitely
+  for (;;) {
+    totalPasses > 0 && (await delay(60000 * config.searchInterval)); // 30 minutes
     let start = 0;
 
     let clearMessage = setLoadingMessage("Searching for jobs.", chalk.blue);
@@ -44,6 +50,7 @@ export async function scrapeJobs(page) {
         });
       } catch (error) {
         clearMessage(`End of search. ${jobs.length} job(s) found.`, true);
+        totalPasses++;
 
         if (sentJobs.length !== jobs.length) {
           sentJobs = jobs.slice(0);

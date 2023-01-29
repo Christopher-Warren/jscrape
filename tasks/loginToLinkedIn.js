@@ -1,52 +1,41 @@
-import open from "open";
 import chalk from "chalk";
-import logUpdate from "log-update";
 import { setLoadingMessage } from "../utils/setLoadingMessage.js";
-
-import { config } from "../config.js";
 
 export async function loginToLinkedIn(page) {
   console.log(chalk.magenta("Logging into LinkedIn..."));
   await page.goto("https://www.linkedin.com/home");
 
-  const portalUrl = await page.openPortal();
-  console.log(portalUrl);
-  await page.waitForSelector('a[href="/in/christopher-warren-188b2180/"]', {
-    timeout: 86400 * 1000, // 24 hours
-  });
-
   // Type into search box.
-  // await page.type("#session_key", process.env.LINKEDIN_UN);
-  // await page.type("#session_password", process.env.LINKEDIN_PW);
+  await page.type("#session_key", process.env.LINKEDIN_UN);
+  await page.type("#session_password", process.env.LINKEDIN_PW);
 
-  // await Promise.all([
-  //   page.waitForNavigation(),
-  //   page.click(".sign-in-form__submit-button"),
-  // ]);
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click(".sign-in-form__submit-button"),
+  ]);
 
-  // try {
-  //   await page.waitForSelector('a[href="https://www.linkedin.com/jobs/?"]', {
-  //     timeout: 2000,
-  //   });
+  try {
+    await page.waitForSelector('a[href="https://www.linkedin.com/jobs/?"]', {
+      timeout: 2000,
+    });
 
-  //   console.log(chalk.magenta("✔ Login successful."));
-  // } catch (error) {
-  //   const portalUrl = await page.openPortal();
+    console.log(chalk.magenta("✔ Login successful."));
+  } catch (error) {
+    const portalUrl = await page.openPortal();
 
-  //   // 1
-  //   const clearMessage = setLoadingMessage(
-  //     `Waiting for user to verify - ${portalUrl}`,
-  //     chalk.magenta
-  //   );
+    // 1
+    const clearMessage = setLoadingMessage(
+      `Waiting for user to verify - ${portalUrl}`,
+      chalk.magenta
+    );
 
-  //   await open(portalUrl);
-  //   await page.waitForSelector('a[href="/in/christopher-warren-188b2180/"]', {
-  //     timeout: 86400 * 1000, // 24 hours
-  //   });
+    await page.waitForSelector('a[href="/in/christopher-warren-188b2180/"]', {
+      timeout: 86400 * 1000, // 24 hours
+    });
 
-  //   // 2
-  //   clearMessage("✔ Verification successful.");
+    // 2
+    clearMessage("✔ Verification successful.");
 
-  //   await page.closePortal();
-  // }
+    await page.closePortal();
+  }
 }

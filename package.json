@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js",
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
   },
@@ -18,11 +18,8 @@
     "cli-spinners": "^2.7.0",
     "concurrently": "^6.2.1",
     "dotenv": "^16.0.3",
-    "express": "^4.17.1",
-    "http-proxy-middleware": "^2.0.6",
     "log-update": "^5.0.1",
     "nodemailer": "^6.9.0",
-    "open": "^8.4.0",
     "puppeteer": "^19.6.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-portal": "^3.1.0",

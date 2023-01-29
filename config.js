@@ -1,6 +1,6 @@
 export const config = {
   baseSearchURL: "https://www.linkedin.com/jobs/search/",
-  searchFilters: "?f_TPR=r604800&f_WT=2&keywords=",
+  searchFilters: "?f_TPR=r86400&f_WT=2&keywords=",
   searchKeywords: "junior frontend developer",
   customFilters: [
     "sr.",
@@ -15,6 +15,7 @@ export const config = {
     "scala",
   ],
   mainURL: null,
+  searchInterval: 30, // Time in minutes that the search will execute
 };
 config.mainURL = encodeURI(
   `${config.baseSearchURL}${config.searchFilters}${config.searchKeywords}`

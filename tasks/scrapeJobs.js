@@ -93,7 +93,7 @@ export async function scrapeJobs(page) {
       if (jobsCount === i) {
         clearMessage(`Searching for jobs. ${jobs.length} job(s) found.`);
         i = 1;
-        start = start + 950;
+        start += 25; // 25 job results per page
         await page.goto(`${config.mainURL}&start=${start}`);
         clearMessage = setLoadingMessage(
           `Searching for jobs. ${jobs.length} job(s) found.`,

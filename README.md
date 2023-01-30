@@ -10,7 +10,7 @@ Searching for jobs on LinkedIn can be a painful process. If you search for "soft
 
 This tool is a solution to that and helps save time by only providing links to jobs that you care about.
 
-## Install
+## Install & Run
 
 > :warning: **An email server is required**: See [well known services](https://nodemailer.com/smtp/well-known/) for a list of potential email providers
 
@@ -19,6 +19,7 @@ This tool is a solution to that and helps save time by only providing links to j
 3. Rename `.env.example` to `.env` and enter your data
    `NODEMAILER` variables can be obtained from your email provider
 4. Modify `config.js` to whatever conditions you would like
+5. Run `npm start` to start the server
 
 ## Configuration
 

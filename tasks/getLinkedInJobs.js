@@ -17,15 +17,20 @@ export async function getLinkedInJobs() {
     deviceScaleFactor: 1,
   });
 
+  const portalurl = await page.openPortal();
+  console.log(portalurl);
+
   try {
     await loginToLinkedIn(page);
   } catch (error) {
-    throw new Error("There was a problem logging in");
+    await page.screenshot({ path: "../error.png" });
+    throw new Error(`There was a problem logging in: ${error}`);
   }
 
   try {
     await scrapeJobs(page);
   } catch (error) {
-    throw new Error("There was a problem scraping jobs");
+    await page.screenshot({ path: "../error.png" });
+    throw new Error(`There was a problem scraping jobs: ${error}`);
   }
 }

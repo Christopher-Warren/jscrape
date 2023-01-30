@@ -1,7 +1,5 @@
-import chalk from "chalk";
-
 export async function loginToLinkedIn(page) {
-  console.log(chalk.magenta("Logging into LinkedIn..."));
+  console.log("Logging into LinkedIn...");
   await page.goto("https://www.linkedin.com/home");
 
   // Type into search box.
@@ -18,7 +16,7 @@ export async function loginToLinkedIn(page) {
       timeout: 10000,
     });
 
-    console.log(chalk.magenta("✔ Login successful."));
+    console.log("✔ Login successful.");
   } catch (error) {
     const portalUrl = await page.openPortal();
 

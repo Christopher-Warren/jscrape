@@ -1,21 +1,15 @@
 import sendEmail from "../utils/sendEmail.js";
-import chalk from "chalk";
-
 import { config } from "../config.js";
 import { delay } from "../utils/delay.js";
 
 export async function scrapeJobs(page) {
   let totalPasses = 0;
 
+  console.log(`Beginning search for ${config.searchKeywords}} jobs.`);
   console.log(
-    `Beginning search for ${chalk.cyan(`${config.searchKeywords}`)} jobs.`
-  );
-  console.log(
-    chalk.yellow(
-      `Excluding all jobs that contain ${chalk.white(
-        config.customTitleFilters.map((i) => " " + i)
-      )}`
-    )
+    `Excluding all jobs that contain ${config.customTitleFilters.map(
+      (i) => " " + i
+    )}`
   );
 
   try {

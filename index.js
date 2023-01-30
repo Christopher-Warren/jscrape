@@ -14,7 +14,7 @@ puppeteer.use(
         port: process.env.PORT || 3000,
       },
       baseUrl: process.env.PORT
-        ? "https://portal-test-12.onrender.com"
+        ? "https://jscrape.onrender.com"
         : "http://localhost:3000",
     },
   })

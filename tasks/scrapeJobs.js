@@ -1,6 +1,5 @@
 import sendEmail from "../utils/sendEmail.js";
 import chalk from "chalk";
-import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 
 import { config } from "../config.js";
 import { delay } from "../utils/delay.js";
@@ -40,7 +39,7 @@ export async function scrapeJobs(page) {
     totalPasses > 0 && (await delay(60000 * config.searchInterval)); // 30 minutes
     let start = 0;
 
-    let clearMessage = setLoadingMessage("Searching for jobs.", chalk.blue);
+    console.log("Searching for jobs...");
 
     for (let i = 1; i <= jobsCount; i++) {
       try {
@@ -49,9 +48,8 @@ export async function scrapeJobs(page) {
           hidden: true,
         });
       } catch (error) {
-        clearMessage(
-          `${jobs.length} job(s) found. Done. Waiting ${config.searchInterval} minutes until next search.`,
-          true
+        console.log(
+          `Done. Waiting ${config.searchInterval} minutes until next search.`
         );
         totalPasses++;
 
@@ -91,14 +89,9 @@ export async function scrapeJobs(page) {
       }
 
       if (jobsCount === i) {
-        clearMessage(`Searching for jobs. ${jobs.length} job(s) found.`);
         i = 1;
         start += 25; // 25 job results per page
         await page.goto(`${config.mainURL}&start=${start}`);
-        clearMessage = setLoadingMessage(
-          `Searching for jobs. ${jobs.length} job(s) found.`,
-          chalk.blue
-        );
       }
     }
   }

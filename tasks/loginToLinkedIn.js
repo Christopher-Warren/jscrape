@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 
 export async function loginToLinkedIn(page) {
   console.log(chalk.magenta("Logging into LinkedIn..."));
@@ -25,15 +24,15 @@ export async function loginToLinkedIn(page) {
 
     console.log(portalUrl);
 
-    const clearMessage = setLoadingMessage(
-      `Waiting for user to verify, visit link above to solve captcha`
+    console.log(
+      "Waiting for user to verify, visit link above to solve captcha"
     );
 
     await page.waitForSelector(".search-global-typeahead__input", {
       timeout: 86400 * 1000, // 24 hours
     });
 
-    clearMessage("✔ Verification successful.");
+    console.log("✔ Verification successful.");
 
     await page.closePortal();
   }

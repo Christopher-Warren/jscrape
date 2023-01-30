@@ -23,9 +23,10 @@ export async function loginToLinkedIn(page) {
   } catch (error) {
     const portalUrl = await page.openPortal();
 
+    console.log(portalUrl);
+
     const clearMessage = setLoadingMessage(
-      `Waiting for user to verify - ${portalUrl}`,
-      chalk.magenta
+      `Waiting for user to verify, visit link above to solve captcha`
     );
 
     await page.waitForSelector(".search-global-typeahead__input", {

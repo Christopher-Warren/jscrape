@@ -14,22 +14,22 @@ export async function scrapeJobs(page) {
 
   try {
     await page.goto(config.mainURL);
-
     await page.waitForSelector("#job-details");
   } catch (error) {
     console.log(error);
-    page.screenshot({ path: "error.png" });
   }
 
   let jobsCount = 25; // 25 jobs per page
 
   const jobs = [];
-  let sentJobs = [];
+  const sentJobs = [];
   const excludedJobs = [];
 
   // Run infinitely
   for (;;) {
     let start = 0;
+
+    // No delay for first search after starting server
     if (!isFirstSearch) {
       await delay(60000 * config.searchInterval);
     } else {
@@ -51,16 +51,15 @@ export async function scrapeJobs(page) {
         break;
       }
 
-      // updateJobs
       try {
-        await updateJobs(page, i, { jobs, sentJobs, excludedJobs });
+        await updateJobs(page, i, { jobs, excludedJobs });
       } catch (error) {
         await sendNewJobs({ jobs, sentJobs, excludedJobs });
 
         break;
       }
 
-      // Go to next page
+      // Go to next page when at end
       if (i === jobsCount) {
         i = 1;
         start += 25; // 25 job results per page
@@ -72,20 +71,34 @@ export async function scrapeJobs(page) {
 
 async function updateJobs(page, i, { jobs, excludedJobs }) {
   const jobContainer = await page.waitForSelector(
-    `ul:nth-child(3) li:nth-child(${i})`
+    `ul:nth-child(3) li:nth-child(${i})`,
+    { timeout: 5000 }
   );
+
+  // Scroll to job listing
   await jobContainer.evaluate((el) => el.scrollIntoView());
 
+  // Wait for job listing link to load
   const jobListing = await page.waitForSelector(
-    `ul:nth-child(3) li:nth-child(${i}) a`
+    `ul:nth-child(3) li:nth-child(${i}) a`,
+    { timeout: 5000 }
   );
+  // The job element
   const val = await jobListing.evaluate((el) => {
-    return { title: el.innerText, href: el.href };
+    // Parse link for readablility
+    const arrOfUrl = el.href.split("/");
+    arrOfUrl.pop();
+    const url = arrOfUrl.join("/");
+
+    return { title: el.innerText, href: url };
   });
 
+  // Check if job includes any terms we don't want to see
   const matchesFilter = config.customTitleFilters.some((cond) =>
     val.title.toLowerCase().includes(cond.toLowerCase())
   );
+
+  // Check if job already exists
   const newJob = !jobs.some((job) => job.href === val.href);
 
   if (matchesFilter) {
@@ -103,7 +116,12 @@ async function sendNewJobs({ jobs, sentJobs, excludedJobs }) {
   );
 
   if (sentJobs.length !== jobs.length) {
-    sentJobs = jobs.slice(0);
+    // Add newly found jobs to sentJobs in order to avoid sending
+    // emails containing duplicate jobs.
+    for (let i = sentJobs.length; i < jobs.length; i++) {
+      sentJobs.push(jobs[i]);
+    }
+
     await sendEmail(jobs, excludedJobs.length);
   } else {
     console.log("No new jobs found");

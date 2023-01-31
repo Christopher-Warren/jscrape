@@ -35,7 +35,7 @@ export const config = {
     "ServiceNow",
   ],
   mainURL: null,
-  searchInterval: 30, // Time in minutes that the search will execute
+  searchInterval: 10, // Time in minutes that the search will execute
 };
 config.mainURL = encodeURI(
   `${config.baseSearchURL}${config.searchFilters}${config.searchKeywords}`

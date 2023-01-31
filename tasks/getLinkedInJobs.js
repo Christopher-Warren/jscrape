@@ -17,9 +17,6 @@ export async function getLinkedInJobs() {
     deviceScaleFactor: 1,
   });
 
-  const portalurl = await page.openPortal();
-  console.log(portalurl);
-
   try {
     await loginToLinkedIn(page);
   } catch (error) {

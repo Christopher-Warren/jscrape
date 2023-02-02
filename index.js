@@ -7,7 +7,6 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { initStorage } from "./lib/initStorage.js";
 import { initConfig } from "./lib/initConfig.js";
 import { getLinkedInJobs } from "./tasks/getLinkedInJobs.js";
-import sendEmail from "./utils/sendEmail.js";
 
 initConfig();
 initStorage();
@@ -26,10 +25,4 @@ puppeteer.use(
   })
 );
 
-await sendEmail([
-  { title: "sometitle", href: "http://www.google.com" },
-  { title: "sometitle", href: "http://www.google.com" },
-  { title: "sometitle", href: "http://www.google.com" },
-]);
-
-// await getLinkedInJobs();
+await getLinkedInJobs();

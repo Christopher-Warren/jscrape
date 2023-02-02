@@ -25,21 +25,28 @@ export default async function sendEmail(jobs, excludedJobs) {
     to: recipient,
     subject: `New jobs! ${new Date().toLocaleString()}`,
     text: `Plain text`,
-    html: `<h1>Jscape - ${excludedJobs} jobs excluded</h1>
-    <ul style="list-style: none; font-size: larger">
-      ${jobs.map(
-        (job) => `<li>
-      <a href="${job.href}">${job.title}</a>
-      </li>`
-      )}
-    </ul>
+    html: `
+    <div style="">
+      <h1 style="margin-top: 5px; margin-bottom: 5px">New jobs have been found.</h1>
+      <h2 style="margin-top: 5px; margin-bottom: 5px">${excludedJobs} jobs were excluded.</h2>
+      <ul style="list-style: none; font-size: larger; padding-left: 0px">
+        ${jobs
+          .map(
+            (job) =>
+              `<li style="margin-top: 10px;"><a href="${job.href}">${job.title}</a></li>`
+          )
+          .join("")}
+      </ul>
+    </div>
     `,
   };
 
   try {
     await transporter.sendMail(selfMailOptions);
-    console.log("Jobs sent successfully");
+
+    return `Found and sent ${jobs.length} new job(s).`;
   } catch (error) {
     console.log(error);
+    return error;
   }
 }

@@ -14,9 +14,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^5.2.0",
     "cli-spinners": "^2.7.0",
     "concurrently": "^6.2.1",
     "dotenv": "^16.0.3",
+    "log-update": "^5.0.1",
     "node-storage": "^0.0.9",
     "nodemailer": "^6.9.0",
     "puppeteer": "^19.6.2",

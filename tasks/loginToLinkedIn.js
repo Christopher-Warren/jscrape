@@ -1,5 +1,7 @@
+import chalk from "chalk";
+
 export async function loginToLinkedIn(page) {
-  console.log("Logging into LinkedIn...");
+  console.log(chalk.magenta("Logging into LinkedIn..."));
   await page.goto("https://www.linkedin.com/home");
 
   // Type into search box.
@@ -16,21 +18,17 @@ export async function loginToLinkedIn(page) {
       timeout: 10000,
     });
 
-    console.log("✔ Login successful.");
+    console.log(chalk.magenta("✔ Login successful."));
   } catch (error) {
     const portalUrl = await page.openPortal();
 
-    console.log(portalUrl);
-
-    console.log(
-      "Waiting for user to verify, visit link above to solve captcha"
-    );
-
+    console.log("Please visit link below and solve captcha");
+    console.log(chalk.blue(portalUrl));
     await page.waitForSelector(".search-global-typeahead__input", {
       timeout: 86400 * 1000, // 24 hours
     });
 
-    console.log("✔ Verification successful.");
+    console.log(chalk.magenta("✔ Verification successful."));
 
     await page.closePortal();
   }

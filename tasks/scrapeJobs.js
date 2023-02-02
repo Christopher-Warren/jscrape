@@ -4,6 +4,9 @@ import { delay } from "../utils/delay.js";
 
 import Storage from "node-storage";
 
+import chalk from "chalk";
+import { setLoadingMessage } from "../utils/setLoadingMessage.js";
+
 export async function scrapeJobs(page) {
   // Is flipped after first run
   let isFirstSearch = true;
@@ -12,15 +15,19 @@ export async function scrapeJobs(page) {
 
   const jobsCount = 25; // 25 jobs per page
 
-  console.log(`Beginning search for ${config.searchKeywords}} jobs.`);
+  console.log(
+    `Beginning search for ${chalk.blue(config.searchKeywords)} jobs.`
+  );
 
   console.log(
-    `Excluding all jobs that contain ${config.excludeFilter.map(
-      (i) => " " + i
+    `Excluding all jobs that contain ${chalk.yellow(
+      config.excludeFilter.map((i) => " " + i)
     )}`
   );
   console.log(
-    `Including jobs that contain ${config.includeFilter.map((i) => " " + i)}`
+    `Including jobs that contain ${chalk.blue(
+      config.includeFilter.map((i) => " " + i)
+    )}`
   );
 
   try {
@@ -42,7 +49,11 @@ export async function scrapeJobs(page) {
       isFirstSearch = false;
     }
 
-    console.log("Searching for jobs...");
+    // console.log(chalk.blue("Searching for jobs..."));
+    const clearLoadingMessage = setLoadingMessage(
+      "Searching for jobs...",
+      chalk.blue
+    );
 
     for (let i = 1; i <= jobsCount; i++) {
       // As long as "No matching jobs found." is not present continue running.
@@ -52,7 +63,8 @@ export async function scrapeJobs(page) {
           hidden: true,
         });
       } catch (error) {
-        await sendNewJobs({ jobs, excludedJobs });
+        const message = await sendNewJobs({ jobs, excludedJobs });
+        clearLoadingMessage(message);
 
         break;
       }
@@ -60,7 +72,8 @@ export async function scrapeJobs(page) {
       try {
         await updateJobs(page, i, { jobs, excludedJobs });
       } catch (error) {
-        await sendNewJobs({ jobs, excludedJobs });
+        const message = await sendNewJobs({ jobs, excludedJobs });
+        clearLoadingMessage(message);
 
         break;
       }
@@ -126,21 +139,19 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
 
 async function sendNewJobs({ jobs, excludedJobs }) {
   const store = new Storage("./store.json");
-  console.log(excludedJobs.length);
-  console.log(jobs.length);
   if (jobs.length > 0) {
-    await sendEmail(jobs, excludedJobs.length);
+    const emailMessage = await sendEmail(jobs, excludedJobs.length);
 
     const previousJobs = store.get("jobs");
 
     store.put("jobs", [...previousJobs, ...jobs]);
 
-    console.log(
-      `Done. Waiting ${config.searchInterval} minutes until next search.`
-    );
+    return `${emailMessage} Waiting ${chalk.yellow(
+      config.searchInterval
+    )} minutes until next search.`;
   } else {
-    console.log(
-      `No new jobs found. Waiting ${config.searchInterval} minutes until next search.`
-    );
+    return `No new jobs found. Waiting ${chalk.yellow(
+      config.searchInterval
+    )} minutes until next search.`;
   }
 }

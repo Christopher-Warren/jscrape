@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon index.js --ignore store.json",
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
     "cli-spinners": "^2.7.0",
     "concurrently": "^6.2.1",
     "dotenv": "^16.0.3",
+    "node-storage": "^0.0.9",
     "nodemailer": "^6.9.0",
     "puppeteer": "^19.6.2",
     "puppeteer-extra": "^3.3.4",

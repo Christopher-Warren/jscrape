@@ -16,11 +16,11 @@ puppeteer.use(
   PortalPlugin({
     webPortalConfig: {
       listenOpts: {
-        port: process.env.PORT || 3000,
+        port: process.env.PORT || 3200,
       },
       baseUrl: process.env.PORT
         ? "https://jscrape.onrender.com"
-        : "http://localhost:3000",
+        : "http://localhost:3200",
     },
   })
 );

@@ -117,6 +117,11 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
     return { title: el.innerText, href: url, id: jobId };
   });
 
+  const bodyEl = await page.waitForSelector("#job-details");
+  const body = bodyEl.innerText;
+
+  val.body = body;
+
   // Check if job includes ONLY terms we want to see
   const matchesIncludeFilter = config.includeFilter.some((cond) =>
     val.title.toLowerCase().includes(cond.toLowerCase())

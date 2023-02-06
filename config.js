@@ -3,6 +3,6 @@ export const config = {
   timeRange: "1d",
   onSiteOrRemote: "remote",
   includeFilter: ["junior", "jr.", "intern", "react", "front end", "frontend"],
-  excludeFilter: ["angular", ".net", "c#"],
-  searchInterval: 0.1, // Time in minutes that the search will execute
+  excludeFilter: ["angular", ".net", "c#", "senior", "sr.", "java"],
+  searchInterval: 30, // Time in minutes that the search will execute
 };

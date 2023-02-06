@@ -27,13 +27,16 @@ export default async function sendEmail(jobs, excludedJobs) {
     text: `Plain text`,
     html: `
     <div style="">
-      <h1 style="margin-top: 5px; margin-bottom: 5px">New jobs have been found.</h1>
+      <h1 style="margin-top: 5px; margin-bottom: 5px">New jobs found.</h1>
       <h2 style="margin-top: 5px; margin-bottom: 5px">${excludedJobs} jobs were excluded.</h2>
       <ul style="list-style: none; font-size: larger; padding-left: 0px">
         ${jobs
           .map(
             (job) =>
-              `<li style="margin-top: 10px;"><a href="${job.href}">${job.title}</a></li>`
+              ` <li style="margin-top: 10px; padding-bottom: 20px">
+                  <a href="${job.href}">${job.title}</a>
+                  <div>${job.body}</div>
+                </li>`
           )
           .join("")}
       </ul>

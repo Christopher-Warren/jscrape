@@ -10,7 +10,8 @@ export async function loginToLinkedIn(page) {
 
   await Promise.all([
     page.waitForNavigation(),
-    page.click(".sign-in-form__submit-button"),
+    // page.click(".sign-in-form__submit-button"),
+    page.keyboard.press("Enter"),
   ]);
 
   try {

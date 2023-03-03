@@ -15,7 +15,7 @@ export default async function sendEmail(jobs, excludedJobs) {
       pass: pass,
     },
     tls: {
-      secureProtocol: "TLSv1_method",
+      secureProtocol: "TLSv1_2_method",
       rejectUnauthorized: false,
     },
   });
@@ -34,8 +34,9 @@ export default async function sendEmail(jobs, excludedJobs) {
           .map(
             (job) =>
               ` <li style="margin-top: 10px; padding-bottom: 20px">
-                  <a href="${job.href}">${job.title}</a>
-                  <div>${job.body}</div>
+                  <h1><a href="${job.href}">${job.title}</a></h1>
+                 
+                  <div style="height: 10rem; overflow-y: scroll">${job.body}</div>
                 </li>`
           )
           .join("")}

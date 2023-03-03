@@ -118,7 +118,10 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
   });
 
   const bodyEl = await page.waitForSelector("#job-details");
-  const body = bodyEl.innerText;
+
+  const { body } = await bodyEl.evaluate((el) => {
+    return { body: el.innerHTML };
+  });
 
   val.body = body;
 

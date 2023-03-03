@@ -25,4 +25,5 @@ puppeteer.use(
   })
 );
 
+// await test();
 await getLinkedInJobs();

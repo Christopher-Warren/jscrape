@@ -104,6 +104,11 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
     `ul:nth-child(3) li:nth-child(${i}) a`,
     { timeout: 5000 }
   );
+
+  // Click and add delay to wait for body to load
+  await jobListing.click();
+  await delay(500);
+
   // The job element
   const val = await jobListing.evaluate((el) => {
     // Parse link for readablility

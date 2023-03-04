@@ -8,11 +8,7 @@ export async function loginToLinkedIn(page) {
   await page.type("#session_key", process.env.LINKEDIN_UN);
   await page.type("#session_password", process.env.LINKEDIN_PW);
 
-  await Promise.all([
-    page.waitForNavigation(),
-    // page.click(".sign-in-form__submit-button"),
-    page.keyboard.press("Enter"),
-  ]);
+  await Promise.all([page.waitForNavigation(), page.keyboard.press("Enter")]);
 
   try {
     await page.waitForSelector('a[href="https://www.linkedin.com/jobs/?"]', {

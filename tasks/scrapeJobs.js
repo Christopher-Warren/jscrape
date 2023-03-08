@@ -30,15 +30,15 @@ export async function scrapeJobs(page) {
     )}`
   );
 
-  try {
-    await page.goto(config.mainURL);
-    await page.waitForSelector("#job-details");
-  } catch (error) {
-    console.log(error);
-  }
-
   // Run infinitely
   for (;;) {
+    try {
+      await page.goto(config.mainURL);
+      await page.waitForSelector("#job-details");
+    } catch (error) {
+      console.log(error);
+    }
+
     let start = 0;
     const jobs = [];
 
@@ -105,10 +105,6 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
     { timeout: 5000 }
   );
 
-  // Click and add delay to wait for body to load
-  // await jobListing.click();
-  // await delay(500);
-
   // The job element
   const val = await jobListing.evaluate((el) => {
     // Parse link for readablility
@@ -121,14 +117,6 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
 
     return { title: el.innerText, href: url, id: jobId };
   });
-
-  // const bodyEl = await page.waitForSelector("#job-details");
-
-  // const { body } = await bodyEl.evaluate((el) => {
-  //   return { body: el.innerHTML };
-  // });
-
-  // val.body = body;
 
   // Check if job includes ONLY terms we want to see
   const matchesIncludeFilter = config.includeFilter.some((cond) =>
@@ -144,6 +132,16 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
   const jobSent = store.get("jobs").some((i) => i.id === val.id);
 
   if (!jobSent && matchesIncludeFilter && !matchesExcludeFilter) {
+    await jobListing.click();
+    await delay(500);
+    const bodyEl = await page.waitForSelector("#job-details");
+
+    const { body } = await bodyEl.evaluate((el) => {
+      return { body: el.innerHTML };
+    });
+
+    val.body = body;
+
     jobs.push(val);
   } else {
     excludedJobs.push(val);

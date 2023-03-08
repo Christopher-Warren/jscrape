@@ -20,6 +20,7 @@ export default async function sendEmail(jobs, excludedJobs) {
     },
   });
 
+  //  <div style="height: 20rem; overflow-y: scroll">${job.body}</div>
   const selfMailOptions = {
     from: user,
     to: recipient,
@@ -36,7 +37,7 @@ export default async function sendEmail(jobs, excludedJobs) {
               ` <li style="margin-top: 10px; padding-bottom: 20px">
                   <h1><a href="${job.href}">${job.title}</a></h1>
                  
-                  <div style="height: 20rem; overflow-y: scroll">${job.body}</div>
+                 
                 </li>`
           )
           .join("")}

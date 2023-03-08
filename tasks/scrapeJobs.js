@@ -106,8 +106,8 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
   );
 
   // Click and add delay to wait for body to load
-  await jobListing.click();
-  await delay(500);
+  // await jobListing.click();
+  // await delay(500);
 
   // The job element
   const val = await jobListing.evaluate((el) => {
@@ -122,13 +122,13 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
     return { title: el.innerText, href: url, id: jobId };
   });
 
-  const bodyEl = await page.waitForSelector("#job-details");
+  // const bodyEl = await page.waitForSelector("#job-details");
 
-  const { body } = await bodyEl.evaluate((el) => {
-    return { body: el.innerHTML };
-  });
+  // const { body } = await bodyEl.evaluate((el) => {
+  //   return { body: el.innerHTML };
+  // });
 
-  val.body = body;
+  // val.body = body;
 
   // Check if job includes ONLY terms we want to see
   const matchesIncludeFilter = config.includeFilter.some((cond) =>

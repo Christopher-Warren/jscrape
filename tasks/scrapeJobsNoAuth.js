@@ -5,9 +5,21 @@ import { delay } from "../utils/delay.js";
 import Storage from "node-storage";
 
 import chalk from "chalk";
-import { setLoadingMessage } from "../utils/setLoadingMessage.js";
+import puppeteer from "puppeteer-extra";
+import { executablePath } from "puppeteer";
 
-export async function scrapeJobsNoAuth(page) {
+export async function scrapeJobsNoAuth() {
+  const browser = await puppeteer.launch({
+    executablePath: executablePath(),
+    args: ["--no-sandbox"],
+  });
+  const page = await browser.newPage();
+
+  page.setViewport({
+    width: 1080,
+    height: 1260,
+    deviceScaleFactor: 1,
+  });
   // Is flipped after first run
   let isFirstSearch = true;
 
@@ -48,7 +60,7 @@ export async function scrapeJobsNoAuth(page) {
 
     // No delay for first search after starting server
     if (!isFirstSearch) {
-      await delay(60000 * config.searchInterval);
+      await delay(60000 * 0.1);
     } else {
       isFirstSearch = false;
     }
@@ -122,17 +134,6 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
     const url = arrOfUrl.join("/");
 
     return { title: el.innerText, href: url, id: el.innerText };
-  });
-
-  const bodyEl = await page.waitForSelector(".show-more-less-html__markup");
-
-  // Click and add delay to wait for body to load
-  await jobListing.click();
-  await delay(500);
-
-  // Error: Execution context was destroyed, most likely because of a navigation.
-  const body = await bodyEl.evaluate((el) => {
-    return { body: el.innerHTML };
   });
 
   // Check if job includes ONLY terms we want to see

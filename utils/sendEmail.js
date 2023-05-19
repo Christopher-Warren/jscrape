@@ -34,8 +34,8 @@ export default async function sendEmail(jobs, excludedJobs) {
           .map(
             (job) =>
               ` <li style="margin-top: 10px; padding-bottom: 20px">
-                  <h1><a href="${job.href}">${job.title}</a></h1>
-                  <div style="height: 20rem; overflow-y: scroll">${job.body}</div>
+                  <h1><input type="checkbox" style="width: 20px; height: 20px; margin-right: 15px" /><a href="${job.href}">${job.title}</a></h1>
+                  <div style="height: 20rem; width: 500px; overflow-y: scroll; ">${job.body}</div>
                  
                 </li>`
           )

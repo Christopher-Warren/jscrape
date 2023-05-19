@@ -5,10 +5,10 @@ import puppeteer from "puppeteer-extra";
 import PortalPlugin from "puppeteer-extra-plugin-portal";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { initStorage } from "./lib/initStorage.js";
-import { initConfig } from "./lib/initConfig.js";
 import { getLinkedInJobs } from "./tasks/getLinkedInJobs.js";
 
-initConfig();
+import cron from "node-cron";
+
 initStorage();
 
 puppeteer.use(StealthPlugin());
@@ -25,5 +25,7 @@ puppeteer.use(
   })
 );
 
-// await test();
-await getLinkedInJobs();
+cron.schedule("* * * * *", () => {
+  console.log("running a task every minute");
+});
+// await getLinkedInJobs();

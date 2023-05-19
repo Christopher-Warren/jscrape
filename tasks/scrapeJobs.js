@@ -1,4 +1,5 @@
 import sendEmail from "../utils/sendEmail.js";
+
 import { config } from "../config.js";
 import { delay } from "../utils/delay.js";
 
@@ -15,20 +16,20 @@ export async function scrapeJobs(page) {
 
   const jobsCount = 25; // 25 jobs per page
 
-  console.log(
-    `Beginning search for ${chalk.blue(config.searchKeywords)} jobs.`
-  );
+  // console.log(
+  //   `Beginning search for ${chalk.blue(config.searchKeywords)} jobs.`
+  // );
 
-  console.log(
-    `Excluding all jobs that contain ${chalk.yellow(
-      config.excludeFilter.map((i) => " " + i)
-    )}`
-  );
-  console.log(
-    `Including jobs that contain ${chalk.blue(
-      config.includeFilter.map((i) => " " + i)
-    )}`
-  );
+  // console.log(
+  //   `Excluding all jobs that contain${chalk.yellow(
+  //     config.excludeFilter.map((i) => " " + i)
+  //   )}`
+  // );
+  // console.log(
+  //   `Including all jobs that contain${chalk.blue(
+  //     config.includeFilter.map((i) => " " + i)
+  //   )}`
+  // );
 
   // Run infinitely
   for (;;) {
@@ -118,20 +119,10 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
     return { title: el.innerText, href: url, id: jobId };
   });
 
-  // Check if job includes ONLY terms we want to see
-  const matchesIncludeFilter = config.includeFilter.some((cond) =>
-    val.title.toLowerCase().includes(cond.toLowerCase())
-  );
-
-  // Check if job contains any terms we DONT want to see
-  const matchesExcludeFilter = config.excludeFilter.some((cond) =>
-    val.title.toLowerCase().includes(cond.toLowerCase())
-  );
-
   // Check if job already exists or has been sent already
   const jobSent = store.get("jobs").some((i) => i.id === val.id);
 
-  if (!jobSent && matchesIncludeFilter && !matchesExcludeFilter) {
+  if (!jobSent) {
     await jobListing.click();
     await delay(500);
     const bodyEl = await page.waitForSelector("#job-details");

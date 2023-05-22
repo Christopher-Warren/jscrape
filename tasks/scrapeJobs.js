@@ -1,3 +1,4 @@
+import cron from "node-cron";
 import sendEmail from "../utils/sendEmail.js";
 
 import { config } from "../config.js";
@@ -9,81 +10,59 @@ import chalk from "chalk";
 import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 
 export async function scrapeJobs(page) {
-  // Is flipped after first run
-  let isFirstSearch = true;
-
   const excludedJobs = [];
-
   const jobsCount = 25; // 25 jobs per page
 
-  // console.log(
-  //   `Beginning search for ${chalk.blue(config.searchKeywords)} jobs.`
-  // );
+  const searchUrls = config.searchUrls;
 
-  // console.log(
-  //   `Excluding all jobs that contain${chalk.yellow(
-  //     config.excludeFilter.map((i) => " " + i)
-  //   )}`
-  // );
-  // console.log(
-  //   `Including all jobs that contain${chalk.blue(
-  //     config.includeFilter.map((i) => " " + i)
-  //   )}`
-  // );
+  cron.schedule("*/30 * * * *", jobSearch, { runOnInit: true });
 
-  // Run infinitely
-  for (;;) {
-    try {
-      await page.goto(config.mainURL);
-      await page.waitForSelector("#job-details");
-    } catch (error) {
-      console.log(error);
-    }
-
-    let start = 0;
-    const jobs = [];
-
-    // No delay for first search after starting server
-    if (!isFirstSearch) {
-      await delay(60000 * config.searchInterval);
-    } else {
-      isFirstSearch = false;
-    }
-
-    // console.log(chalk.blue("Searching for jobs..."));
-    const clearLoadingMessage = setLoadingMessage(
-      "Searching for jobs...",
-      chalk.blue
-    );
-
-    for (let i = 1; i <= jobsCount; i++) {
-      // As long as "No matching jobs found." is not present continue running.
+  async function jobSearch() {
+    for (const url of searchUrls) {
       try {
-        await page.waitForSelector(".jobs-search-no-results-banner", {
-          timeout: 3000,
-          hidden: true,
-        });
+        await page.goto(url);
+        await page.waitForSelector("#job-details");
       } catch (error) {
-        const message = await sendNewJobs({ jobs, excludedJobs });
-        clearLoadingMessage(message);
-
-        break;
+        console.log(error);
       }
 
-      try {
-        await updateJobs(page, i, { jobs, excludedJobs });
-      } catch (error) {
-        const message = await sendNewJobs({ jobs, excludedJobs });
-        clearLoadingMessage(message);
+      let start = 0;
+      const jobs = [];
 
-        break;
-      }
+      const clearLoadingMessage = setLoadingMessage(
+        "Searching for jobs...",
+        chalk.blue
+      );
 
-      // Go to next page when at end
-      if (i === jobsCount) {
-        i = 1;
-        start += 25; // 25 job results per page
-        await page.goto(`${config.mainURL}&start=${start}`);
+      for (let i = 1; i <= jobsCount; i++) {
+        // As long as "No matching jobs found." is not present continue running.
+        try {
+          await page.waitForSelector(".jobs-search-no-results-banner", {
+            timeout: 3000,
+            hidden: true,
+          });
+        } catch (error) {
+          const message = await sendNewJobs({ jobs, excludedJobs });
+          clearLoadingMessage(message);
+
+          break;
+        }
+
+        try {
+          await updateJobs(page, i, { jobs, excludedJobs });
+        } catch (error) {
+          const message = await sendNewJobs({ jobs, excludedJobs });
+          clearLoadingMessage(message);
+
+          break;
+        }
+
+        // Go to next page when at end
+        if (i === jobsCount) {
+          i = 1;
+          start += 25; // 25 job results per page
+          await page.goto(`${url}&start=${start}`);
+        }
       }
     }
   }

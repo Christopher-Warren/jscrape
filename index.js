@@ -25,11 +25,11 @@ puppeteer.use(
   })
 );
 
-cron.schedule(
-  "* * * * *",
-  () => {
-    console.log("running a task every minute");
-  },
-  { runOnInit: true }
-);
-// await getLinkedInJobs();
+// cron.schedule(
+//   "*/30 * * * *",
+//   () => {
+//     console.log("running a task every minute");
+//   },
+//   { runOnInit: true }
+// );
+await getLinkedInJobs();

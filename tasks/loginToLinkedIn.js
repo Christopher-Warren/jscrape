@@ -5,6 +5,7 @@ export async function loginToLinkedIn(page) {
   await page.goto("https://www.linkedin.com/home");
 
   // Type into search box.
+  await page.waitForSelector("#session_key");
   await page.type("#session_key", process.env.LINKEDIN_UN);
   await page.type("#session_password", process.env.LINKEDIN_PW);
 

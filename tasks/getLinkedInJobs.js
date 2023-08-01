@@ -20,14 +20,15 @@ export async function getLinkedInJobs() {
   try {
     await loginToLinkedIn(page);
   } catch (error) {
-    await page.screenshot({ path: "../error.png" });
+    await page.screenshot({ path: "./error.png" });
+    console.log(error);
     throw new Error(`There was a problem logging in: ${error}`);
   }
 
   try {
     await scrapeJobs(page);
   } catch (error) {
-    await page.screenshot({ path: "../error.png" });
+    await page.screenshot({ path: "./error.png" });
     throw new Error(`There was a problem scraping jobs: ${error}`);
   }
 }

@@ -7,8 +7,6 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { initStorage } from "./lib/initStorage.js";
 import { getLinkedInJobs } from "./tasks/getLinkedInJobs.js";
 
-import cron from "node-cron";
-
 initStorage();
 
 puppeteer.use(StealthPlugin());
@@ -25,11 +23,4 @@ puppeteer.use(
   })
 );
 
-// cron.schedule(
-//   "*/30 * * * *",
-//   () => {
-//     console.log("running a task every minute");
-//   },
-//   { runOnInit: true }
-// );
 await getLinkedInJobs();

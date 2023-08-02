@@ -8,6 +8,7 @@ export async function getLinkedInJobs() {
   const browser = await puppeteer.launch({
     executablePath: executablePath(),
     args: ["--no-sandbox"],
+    headless: false,
   });
   const page = await browser.newPage();
 

@@ -15,7 +15,7 @@ export async function scrapeJobs(page) {
 
   const searchUrls = config.searchUrls;
 
-  cron.schedule("*/30 * * * *", jobSearch, { runOnInit: true });
+  cron.schedule("*/5 * * * *", jobSearch, { runOnInit: true });
 
   async function jobSearch() {
     for (const url of searchUrls) {

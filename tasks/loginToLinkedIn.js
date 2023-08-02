@@ -2,10 +2,12 @@ import chalk from "chalk";
 
 export async function loginToLinkedIn(page) {
   console.log(chalk.magenta("Logging into LinkedIn..."));
-  await page.goto("https://www.linkedin.com/home");
+  await page.goto("https://www.linkedin.com/");
+  await page.reload();
 
   // Type into search box.
-  await page.waitForSelector("#session_key");
+  await page.waitForSelector("#session_key", { timeout: 0 });
+
   await page.type("#session_key", process.env.LINKEDIN_UN);
   await page.type("#session_password", process.env.LINKEDIN_PW);
 

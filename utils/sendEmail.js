@@ -23,19 +23,19 @@ export default async function sendEmail(jobs, excludedJobs) {
   const selfMailOptions = {
     from: user,
     to: recipient,
-    subject: `New jobs! ${new Date().toLocaleString()}`,
+    subject: `New jobs - ${new Date().toLocaleString()}`,
     text: `Plain text`,
     html: `
     <div style="">
-      <h1 style="margin-top: 5px; margin-bottom: 5px">New jobs found.</h1>
-      <h2 style="margin-top: 5px; margin-bottom: 5px">${excludedJobs} jobs were excluded.</h2>
+      <h3 style="margin-top: 5px; margin-bottom: 5px">New jobs found.</h1>
+      <h3 style="margin-top: 5px; margin-bottom: 5px">${excludedJobs} jobs were excluded.</h2>
       <ul style="list-style: none; font-size: larger; padding-left: 0px">
         ${jobs
           .map(
             (job) =>
-              ` <li style="margin-top: 10px; padding-bottom: 20px">
-                  <h1><input type="checkbox" style="width: 20px; height: 20px; margin-right: 15px" /><a href="${job.href}">${job.title}</a></h1>
-                  <div style="height: 20rem; width: 500px; overflow-y: scroll; ">${job.body}</div>
+              ` <li style="margin-top: 10px; margin-bottom: 20px">
+                  <h4><input type="checkbox" style="margin-right: 10px" /><a href="${job.href}">${job.title}</a></h1>
+                 
                  
                 </li>`
           )

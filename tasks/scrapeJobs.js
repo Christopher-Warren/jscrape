@@ -12,12 +12,14 @@ import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 export async function scrapeJobs(page) {
   const excludedJobs = [];
   const jobsCount = 25; // 25 jobs per page
-
   const searchUrls = config.searchUrls;
 
-  cron.schedule("*/5 * * * *", jobSearch, { runOnInit: true });
+  cron.schedule(`*/${config.searchInterval} * * * *`, jobSearch, {
+    runOnInit: true,
+  });
 
   async function jobSearch() {
+    excludedJobs.length = 0;
     for (const url of searchUrls) {
       try {
         await page.goto(url);
@@ -112,6 +114,7 @@ async function updateJobs(page, i, { jobs, excludedJobs }) {
 
     val.body = body;
 
+    // Can filter here if wanted
     jobs.push(val);
   } else {
     excludedJobs.push(val);
@@ -131,7 +134,9 @@ async function sendNewJobs({ jobs, excludedJobs }) {
       config.searchInterval
     )} minutes until next search.`;
   } else {
-    return `No new jobs found. Waiting ${chalk.yellow(
+    return `${chalk.yellow(
+      excludedJobs.length
+    )} old jobs found. Waiting ${chalk.yellow(
       config.searchInterval
     )} minutes until next search.`;
   }

@@ -1,6 +1,6 @@
 export const config = {
   searchUrls: [
-    "https://www.linkedin.com/jobs/search/?currentJobId=3559500170&distance=25&f_T=3172&f_TPR=r86400&f_WT=2&geoId=103644278&keywords=frontend%20developer&location=&refresh=true&sortBy=R",
+    "https://www.linkedin.com/jobs/search/?f_T=25170%2C100%2C3172&f_TPR=r86400&f_WT=2&geoId=103644278&keywords=javascript developer&location=United States&refresh=true&sortBy=R",
   ],
   searchInterval: 30, // Time in minutes that the search will execute
 };

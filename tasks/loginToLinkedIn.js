@@ -2,11 +2,13 @@ import chalk from "chalk";
 
 export async function loginToLinkedIn(page) {
   console.log(chalk.magenta("Logging into LinkedIn..."));
-  await page.goto("https://www.linkedin.com/");
-  await page.reload();
+
+  await page.goto("https://www.linkedin.com/", {
+    waitUntil: "domcontentloaded",
+  });
 
   // Type into search box.
-  await page.waitForSelector("#session_key", { timeout: 0 });
+  await page.waitForSelector("#session_key");
 
   await page.type("#session_key", process.env.LINKEDIN_UN);
   await page.type("#session_password", process.env.LINKEDIN_PW);
@@ -14,7 +16,7 @@ export async function loginToLinkedIn(page) {
   await Promise.all([page.waitForNavigation(), page.keyboard.press("Enter")]);
 
   try {
-    await page.waitForSelector('a[href="https://www.linkedin.com/jobs/?"]', {
+    await page.waitForSelector(".scaffold-layout__main", {
       timeout: 10000,
     });
 

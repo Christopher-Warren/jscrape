@@ -10,7 +10,7 @@ import chalk from "chalk";
 import { setLoadingMessage } from "../utils/setLoadingMessage.js";
 
 export async function scrapeJobs(page) {
-  const jobsPerPage = 25;
+  const jobsCount = 25; // 25 jobs per page
   const searchUrls = config.searchUrls;
 
   cron.schedule(`*/${config.searchInterval} * * * *`, jobSearch, {
@@ -25,9 +25,8 @@ export async function scrapeJobs(page) {
       const excludedJobs = [];
       let totalFoundJobs;
 
-      // Load initial page
       try {
-        await page.goto(url, { waitUntil: "domcontentloaded" });
+        await page.goto(url);
         await page.waitForSelector("#job-details");
         totalFoundJobs = await page.$eval(
           ".jobs-search-results-list__subtitle",
@@ -37,31 +36,56 @@ export async function scrapeJobs(page) {
         console.log(error);
       }
 
-      const resetLoadingMessage = setLoadingMessage(
-        "Searching for jobs...",
-        chalk.blue
-      );
+      // const clearLoadingMessage = setLoadingMessage(
+      //   "Searching for jobs...",
+      //   chalk.blue
+      // );
 
-      // Iterate through job listings
-      for (let i = 1; i <= jobsPerPage; i++) {
+      for (let i = 1; i <= jobsCount; i++) {
+        // As long as "No matching jobs found." is not present continue running.
+        // document.querySelector('.scaffold-layout__list-container').children.length
         jobsLookedAt++;
-        const newJob = await getJob(page, i);
+        const numOfJobs = await page.$eval(
+          ".scaffold-layout__list-container",
+          (el) => el.children.length
+        );
 
-        if (newJob) jobs.push(newJob);
-
-        // whitelist.forEach((term) => {
-        //
-        // })
-
-        // End search, send jobs
         if (jobsLookedAt === totalFoundJobs) {
-          const message = await sendNewJobs({ jobs, excludedJobs });
-          resetLoadingMessage(`${totalFoundJobs} results. ` + message);
+          console.log(jobsLookedAt);
           break;
         }
 
+        // try {
+        //   await page.waitForSelector(".jobs-search-no-results-banner", {
+        //     timeout: 3000,
+        //     hidden: true,
+        //   });
+        // } catch (error) {
+        //   const message = await sendNewJobs({ jobs, excludedJobs });
+        //   clearLoadingMessage(message);
+        //   console.log(message);
+        //   break;
+        // }
+
+        // try {
+        //   await updateJobs(page, i, { jobs, excludedJobs });
+        // } catch (error) {
+        //   const message = await sendNewJobs({ jobs, excludedJobs });
+        //   clearLoadingMessage(message);
+
+        //   break;
+        // }
+
         // Go to next page when at end
-        if (i === jobsPerPage) {
+        if (i === jobsCount) {
+          console.log("going to next page", jobsLookedAt);
+          console.log(
+            totalFoundJobs + " totalFoundJobs",
+            numOfJobs + " numOfJobs",
+            start + " start",
+            jobs.length + " j.length"
+          );
+
           i = 1;
           start += 25; // 25 job results per page
           await page.goto(`${url}&start=${start}`);
@@ -71,7 +95,7 @@ export async function scrapeJobs(page) {
   }
 }
 
-async function getJob(page, i) {
+async function updateJobs(page, i, { jobs, excludedJobs }) {
   const store = new Storage("./store.json");
 
   const jobContainer = await page.waitForSelector(
@@ -115,27 +139,29 @@ async function getJob(page, i) {
 
     val.body = body;
 
-    return val;
+    // Can filter here if wanted
+    jobs.push(val);
+  } else {
+    excludedJobs.push(val);
   }
-  return null;
 }
 
 async function sendNewJobs({ jobs, excludedJobs }) {
   const store = new Storage("./store.json");
   if (jobs.length > 0) {
-    // need to refactor email so it's not responsible for generating
-    // a message. Instead, it should return the # of jobs sent
     const emailMessage = await sendEmail(jobs, excludedJobs.length);
 
-    const sentJobs = store.get("jobs");
+    const previousJobs = store.get("jobs");
 
-    store.put("jobs", [...sentJobs, ...jobs]);
+    store.put("jobs", [...previousJobs, ...jobs]);
 
     return `${emailMessage} Waiting ${chalk.yellow(
       config.searchInterval
     )} minutes until next search.`;
   } else {
-    return `No new jobs found. Waiting ${chalk.yellow(
+    return `${chalk.yellow(
+      excludedJobs.length
+    )} old jobs found. Waiting ${chalk.yellow(
       config.searchInterval
     )} minutes until next search.`;
   }

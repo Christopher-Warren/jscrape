@@ -15,11 +15,11 @@ export function setLoadingMessage(message, chalkColor = chalk.white) {
     logUpdate(`${chalkColor(`${frame} ${message}`)}`);
   }, cliSpinners.bounce.interval);
 
-  function clearLoadingMessage(message) {
+  function resetLoadingMessage(message) {
     logUpdate(`${chalkColor(`${message}`)}`);
 
     clearInterval(intervalId);
   }
 
-  return clearLoadingMessage;
+  return resetLoadingMessage;
 }

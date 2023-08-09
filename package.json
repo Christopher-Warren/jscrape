@@ -22,7 +22,7 @@
     "node-cron": "^3.0.2",
     "node-storage": "^0.0.9",
     "nodemailer": "^6.9.0",
-    "puppeteer": "^19.6.2",
+    "puppeteer": "^19.11.1",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-portal": "^3.1.0",
     "puppeteer-extra-plugin-stealth": "^2.11.1"

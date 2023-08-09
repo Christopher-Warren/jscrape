@@ -6,6 +6,9 @@ import PortalPlugin from "puppeteer-extra-plugin-portal";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { initStorage } from "./lib/initStorage.js";
 import { getLinkedInJobs } from "./tasks/getLinkedInJobs.js";
+import logUpdate from "log-update";
+import { delay } from "./utils/delay.js";
+import { sendNewJobs } from "./tasks/scrapeJobs.js";
 
 initStorage();
 

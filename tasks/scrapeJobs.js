@@ -7,10 +7,14 @@ import { delay } from "../utils/delay.js";
 import Storage from "node-storage";
 
 import chalk from "chalk";
-import { setLoadingMessage } from "../utils/setLoadingMessage.js";
+import logUpdate from "log-update";
+import {
+  clickNextPage,
+  getJobsLength,
+  getPagesLength,
+} from "../utils/linkedinHelpers.js";
 
 export async function scrapeJobs(page) {
-  const jobsPerPage = 25;
   const searchUrls = config.searchUrls;
 
   cron.schedule(`*/${config.searchInterval} * * * *`, jobSearch, {
@@ -19,124 +23,143 @@ export async function scrapeJobs(page) {
 
   async function jobSearch() {
     for (const url of searchUrls) {
-      let jobsLookedAt = 0;
-      let start = 0;
       const jobs = [];
-      const excludedJobs = [];
-      let totalFoundJobs;
+      let filteredJobs = 0;
 
       // Load initial page
       try {
-        await page.goto(url, { waitUntil: "domcontentloaded" });
+        await page.goto(url, { waitUntil: "networkidle2" });
         await page.waitForSelector("#job-details");
-        totalFoundJobs = await page.$eval(
-          ".jobs-search-results-list__subtitle",
-          (el) => parseInt(el.innerText)
-        );
       } catch (error) {
         console.log(error);
+        throw error;
       }
 
-      const resetLoadingMessage = setLoadingMessage(
-        "Searching for jobs...",
-        chalk.blue
-      );
+      logUpdate("Searching... ");
 
-      // Iterate through job listings
-      for (let i = 1; i <= jobsPerPage; i++) {
-        jobsLookedAt++;
-        const newJob = await getJob(page, i);
+      const totalPages = await getPagesLength(page);
 
-        if (newJob) jobs.push(newJob);
+      // Iterate through pages
+      for (let i = 1; i <= totalPages; i++) {
+        const numOfJobs = await getJobsLength(page);
+        logUpdate(
+          `Searching... Page ${i} of ${totalPages}. Jobs on this page: ${numOfJobs}`
+        );
 
-        // whitelist.forEach((term) => {
-        //
-        // })
-
-        // End search, send jobs
-        if (jobsLookedAt === totalFoundJobs) {
-          const message = await sendNewJobs({ jobs, excludedJobs });
-          resetLoadingMessage(`${totalFoundJobs} results. ` + message);
-          break;
+        // Iterate through job list
+        for (let j = 1; j <= numOfJobs; j++) {
+          const newJob = await getJob(page, j);
+          if (newJob) {
+            jobs.push(newJob);
+          } else {
+            filteredJobs++;
+          }
         }
 
-        // Go to next page when at end
-        if (i === jobsPerPage) {
-          i = 1;
-          start += 25; // 25 job results per page
-          await page.goto(`${url}&start=${start}`);
+        const nextPage = await clickNextPage(page, i + 1);
+        if (!nextPage) {
+          const message = await sendNewJobs({ jobs, filteredJobs });
+          logUpdate(message);
+        } else {
+          logUpdate("Searching... Going to next page!");
         }
       }
+      // console.log("Done!");
     }
   }
 }
 
 async function getJob(page, i) {
-  const store = new Storage("./store.json");
+  try {
+    const store = new Storage("./store.json");
 
-  const jobContainer = await page.waitForSelector(
-    `ul:nth-child(3) li:nth-child(${i})`,
-    { timeout: 5000 }
-  );
+    const jobContainer = await page.waitForSelector(
+      `ul:nth-child(3) li:nth-child(${i})`,
+      { timeout: 5000 }
+    );
 
-  // Scroll to job listing
-  await jobContainer.evaluate((el) => el.scrollIntoView());
+    // Scroll to job listing
+    await jobContainer.evaluate((el) => el.scrollIntoView());
 
-  // Wait for job listing link to load
-  const jobListing = await page.waitForSelector(
-    `ul:nth-child(3) li:nth-child(${i}) a`,
-    { timeout: 5000 }
-  );
+    // Wait for job listing link to load
+    const jobListing = await page.waitForSelector(
+      `ul:nth-child(3) li:nth-child(${i}) a`,
+      { timeout: 5000 }
+    );
 
-  // The job listing element
-  const val = await jobListing.evaluate((el) => {
-    // Parse link for readablility
-    const arrOfUrl = el.href.split("/");
-    // Get id
-    const jobId = arrOfUrl[5];
-    // remove params
-    arrOfUrl.pop();
-    const url = arrOfUrl.join("/");
+    const postedBy = await page.$eval(
+      `ul:nth-child(3) li:nth-child(${i}) span`,
+      (el) => el.innerText
+    );
 
-    return { title: el.innerText, href: url, id: jobId };
-  });
+    // The job listing element
+    const val = await jobListing.evaluate((el) => {
+      // Parse link for readablility
+      const arrOfUrl = el.href.split("/");
+      // Get id
+      const jobId = arrOfUrl[5];
+      // remove params
+      arrOfUrl.pop();
+      const url = arrOfUrl.join("/");
 
-  // Check if job already exists or has been sent already
-  const jobSent = store.get("jobs").some((i) => i.id === val.id);
-
-  if (!jobSent) {
-    await jobListing.click();
-    await delay(500);
-    const bodyEl = await page.waitForSelector("#job-details");
-
-    const { body } = await bodyEl.evaluate((el) => {
-      return { body: el.innerHTML };
+      return { title: el.innerText, href: url, id: jobId };
     });
 
-    val.body = body;
+    const blacklist = ["web", "sr."];
+    // Filter jobs by title
+    for (const keyword of blacklist) {
+      if (val.title.toLowerCase().includes(keyword)) {
+        return;
+      }
+    }
 
-    return val;
+    // Check if job already exists or has been sent already
+    const jobSent = store.get("jobs").some((i) => i.id === val.id);
+
+    if (!jobSent) {
+      await jobListing.click();
+      await delay(500);
+      const bodyEl = await page.waitForSelector("#job-details");
+
+      const { body } = await bodyEl.evaluate((el) => {
+        return { body: el.innerHTML };
+      });
+
+      val.body = body;
+      val.postedBy = postedBy;
+      // Filter by other content
+
+      return val;
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
-  return null;
 }
 
-async function sendNewJobs({ jobs, excludedJobs }) {
-  const store = new Storage("./store.json");
-  if (jobs.length > 0) {
-    // need to refactor email so it's not responsible for generating
-    // a message. Instead, it should return the # of jobs sent
-    const emailMessage = await sendEmail(jobs, excludedJobs.length);
+export async function sendNewJobs({ jobs, filteredJobs }) {
+  try {
+    const store = new Storage("./store.json");
+    if (jobs.length > 0) {
+      // need to refactor email so it's not responsible for generating
+      // a message. Instead, it should return the # of jobs sent
 
-    const sentJobs = store.get("jobs");
+      const emailMessage = await sendEmail(jobs, filteredJobs);
 
-    store.put("jobs", [...sentJobs, ...jobs]);
+      const sentJobs = store.get("jobs");
 
-    return `${emailMessage} Waiting ${chalk.yellow(
-      config.searchInterval
-    )} minutes until next search.`;
-  } else {
-    return `No new jobs found. Waiting ${chalk.yellow(
-      config.searchInterval
-    )} minutes until next search.`;
+      store.put("jobs", [...sentJobs, ...jobs]);
+
+      return `${emailMessage} Waiting ${chalk.yellow(
+        config.searchInterval
+      )} minutes until next search.`;
+    } else {
+      return `No new jobs found. Filtered ${filteredJobs} jobs. Waiting ${chalk.yellow(
+        config.searchInterval
+      )} minutes until next search.`;
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 }

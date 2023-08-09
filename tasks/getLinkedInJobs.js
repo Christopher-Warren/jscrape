@@ -2,12 +2,14 @@ import { executablePath } from "puppeteer";
 
 import { loginToLinkedIn } from "./loginToLinkedIn.js";
 import puppeteer from "puppeteer-extra";
-import { scrapeJobs } from "./scrapeJobs.js";
+import { scrapeJobs, sendNewJobs } from "./scrapeJobs.js";
+import { config } from "../config.js";
 
 export async function getLinkedInJobs() {
   const browser = await puppeteer.launch({
     executablePath: executablePath(),
     args: ["--no-sandbox"],
+    headless: false,
   });
   const page = await browser.newPage();
 
@@ -27,7 +29,6 @@ export async function getLinkedInJobs() {
   try {
     await scrapeJobs(page);
   } catch (error) {
-    await page.screenshot({ path: "./error.png" });
     throw new Error(`There was a problem scraping jobs: ${error}`);
   }
 }

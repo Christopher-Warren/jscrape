@@ -105,14 +105,19 @@ async function getJob(page, i) {
       return { title: el.innerText, href: url, id: jobId };
     });
 
-    const blacklist = ["web", "sr."];
+    const blacklist = config.blacklist;
     // Filter jobs by title
     for (const keyword of blacklist) {
       if (val.title.toLowerCase().includes(keyword)) {
         return;
       }
     }
-
+    // Filter jobs by postedBy
+    for (const keyword of config.postedByBlacklist) {
+      if (postedBy.toLowerCase().includes(keyword)) {
+        return;
+      }
+    }
     // Check if job already exists or has been sent already
     const jobSent = store.get("jobs").some((i) => i.id === val.id);
 
